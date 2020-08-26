@@ -207,10 +207,9 @@ jobs:
       - run: docker login -u=$QUAY_USER -p=$QUAY_PASS quay.io
       - run: docker run --net host -v /var/run/docker.sock:/var/run/docker.sock -v ~/project:/grace/grace-results quay.io/influxdb/grace:latest
       - store_artifacts:
-          path: ~/project
-          destination: grace-nightly-output
+          path: ~/project/artifacts
       - store_test_results:
-          path: ~/project
+          path: ~/project/grace-results
   jstest:
     docker:
       - image: circleci/golang:1.13-node-browsers
@@ -481,25 +480,25 @@ workflows:
   version: 2
   build:
     jobs:
-      - gotest
-      - golint
-      - lint-feature-flags
-      - jstest
-      - jslint
-      - build
-      - litmus_daily:
-          requires:
-            - build
+      # - gotest
+      # - golint
+      # - lint-feature-flags
+      # - jstest
+      # - jslint
+      # - build
+      - grace_nightly:
+          # requires:
+          #   - build
           filters:
             branches:
               only: /^(?!pull\/).*$/
-      - litmus_integration:
-          requires:
-            - litmus_daily
-          filters:
-            branches:
-              only:
-                - master
+      # - litmus_integration:
+      #     requires:
+      #       - litmus_daily
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
   e2e:
     jobs:
       - e2e
